@@ -70,18 +70,20 @@ class PiePolylineChartViewController: DemoBaseViewController {
         set.sliceSpace = 2
         
         
-        set.colors = ChartColorTemplates.vordiplom()
-            + ChartColorTemplates.joyful()
-            + ChartColorTemplates.colorful()
-            + ChartColorTemplates.liberty()
-            + ChartColorTemplates.pastel()
-            + [UIColor(red: 51/255, green: 181/255, blue: 229/255, alpha: 1)]
+        let colors = ChartColorTemplates.vordiplom() + ChartColorTemplates.joyful() + ChartColorTemplates.colorful() + ChartColorTemplates.liberty() + ChartColorTemplates.pastel()
+        
+        set.colors = colors
+        set.valueColors = colors
+        set.valueLineColor = .clear
         
         set.valueLinePart1OffsetPercentage = 0.8
-        set.valueLinePart1Length = 0.2
-        set.valueLinePart2Length = 0.4
+        set.valueLinePart1Length = 0.38
+        set.valueLinePart2Length = 0
         //set.xValuePosition = .outsideSlice
         set.yValuePosition = .outsideSlice
+        
+        let font = UIFont.init(name: "HiraKakuProN-W6", size: 12.0) ?? UIFont.systemFont(ofSize: 12.0)
+        set.valueFont = font
         
         let data = PieChartData(dataSet: set)
         
@@ -91,8 +93,9 @@ class PiePolylineChartViewController: DemoBaseViewController {
         pFormatter.multiplier = 1
         pFormatter.percentSymbol = " %"
         data.setValueFormatter(DefaultValueFormatter(formatter: pFormatter))
-        data.setValueFont(.systemFont(ofSize: 11, weight: .light))
-        data.setValueTextColor(.black)
+        data.setValueFont(font)
+//        data.setValueTextColor(.blue)
+//        data.setValueTextColors(colors)
         
         chartView.data = data
         chartView.highlightValues(nil)

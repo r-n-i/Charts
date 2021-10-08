@@ -397,8 +397,16 @@ open class PieChartRenderer: NSObject, DataRenderer
                 let drawXInside = sliceAngle > sliceTextDrawingThreshold && drawEntryLabels && xValuePosition == .insideSlice
                 let drawYInside = sliceAngle > sliceTextDrawingThreshold && drawValues && yValuePosition == .insideSlice
                 
-                let valueTextColor = dataSet.valueTextColorAt(j)
+                var valueTextColor = dataSet.valueTextColorAt(j)
                 let entryLabelColor = dataSet.entryLabelColor
+                var haveTowLineOffset: Bool = false
+                
+                if let pieData = self.chart?.data as? PieChartData {
+                    if (value / pieData.yValueSum < 0.125) {
+                        valueTextColor = .clear
+                    }
+                }
+                
 
                 if drawXOutside || drawYOutside
                 {
@@ -433,17 +441,23 @@ open class PieChartRenderer: NSObject, DataRenderer
                         x: labelRadius * (1 + valueLineLength1) * sliceXBase + center.x,
                         y: labelRadius * (1 + valueLineLength1) * sliceYBase + center.y)
 
-                    if transformedAngle.truncatingRemainder(dividingBy: 360.0) >= 90.0 && transformedAngle.truncatingRemainder(dividingBy: 360.0) <= 270.0
+                    if (transformedAngle.truncatingRemainder(dividingBy: 360.0) > 89.0 && transformedAngle.truncatingRemainder(dividingBy: 360.0) < 91.0) || (transformedAngle.truncatingRemainder(dividingBy: 360.0) > 269.0 && transformedAngle.truncatingRemainder(dividingBy: 360.0) < 271.0)
                     {
                         pt2 = CGPoint(x: pt1.x - polyline2Length, y: pt1.y)
-                        align = .right
+                        align = .justified
                         labelPoint = CGPoint(x: pt2.x - 5, y: pt2.y - lineHeight)
-                    }
-                    else
-                    {
+                    } else if transformedAngle.truncatingRemainder(dividingBy: 360.0) > 90.0 && transformedAngle.truncatingRemainder(dividingBy: 360.0) < 270.0 {
+                        pt2 = CGPoint(x: pt1.x - polyline2Length, y: pt1.y)
+                        align = .right
+                        labelPoint = CGPoint(x: pt2.x, y: pt2.y - lineHeight)
+                    } else {
                         pt2 = CGPoint(x: pt1.x + polyline2Length, y: pt1.y)
                         align = .left
                         labelPoint = CGPoint(x: pt2.x + 5, y: pt2.y - lineHeight)
+                    }
+                    
+                    if transformedAngle.truncatingRemainder(dividingBy: 360.0) > 224.0 && transformedAngle.truncatingRemainder(dividingBy: 360.0) < 316.0 && pe!.label!.count > 5 {
+                        haveTowLineOffset = true
                     }
 
                     DrawLine: do
@@ -471,16 +485,17 @@ open class PieChartRenderer: NSObject, DataRenderer
                     
                     if drawXOutside && drawYOutside
                     {
-                        context.drawText(valueText,
+                        context.drawText(pe!.label!,
                                          at: labelPoint,
                                          align: align,
                                          angleRadians: angleRadians,
                                          attributes: [.font: valueFont,
-                                                      .foregroundColor: valueTextColor])
+                                                      .foregroundColor: valueTextColor],
+                                         haveTwoLineOffset:haveTowLineOffset)
                         
                         if j < data.entryCount && pe?.label != nil
                         {
-                            context.drawText(pe!.label!,
+                            context.drawText(valueText,
                                              at: CGPoint(x: labelPoint.x,
                                                          y: labelPoint.y + lineHeight),
                                              align: align,
@@ -493,7 +508,7 @@ open class PieChartRenderer: NSObject, DataRenderer
                     {
                         if j < data.entryCount && pe?.label != nil
                         {
-                            context.drawText(pe!.label!,
+                            context.drawText(valueText,
                                              at: CGPoint(x: labelPoint.x,
                                                          y: labelPoint.y + lineHeight / 2.0),
                                              align: align,
@@ -504,13 +519,14 @@ open class PieChartRenderer: NSObject, DataRenderer
                     }
                     else if drawYOutside
                     {
-                        context.drawText(valueText,
+                        context.drawText(pe!.label!,
                                          at: CGPoint(x: labelPoint.x,
-                                                     y: labelPoint.y + lineHeight / 2.0),
+                                                     y: labelPoint.y + lineHeight / 2.0 ),
                                          align: align,
                                          angleRadians: angleRadians,
                                          attributes: [.font: valueFont,
-                                                      .foregroundColor: valueTextColor])
+                                                      .foregroundColor: valueTextColor],
+                                         haveTwoLineOffset:haveTowLineOffset)
                     }
                 }
 
@@ -522,15 +538,16 @@ open class PieChartRenderer: NSObject, DataRenderer
 
                     if drawXInside && drawYInside
                     {
-                        context.drawText(valueText,
+                        context.drawText(pe!.label!,
                                          at: CGPoint(x: x, y: y),
                                          align: .center,
                                          angleRadians: angleRadians,
-                                         attributes: [.font: valueFont, .foregroundColor: valueTextColor])
+                                         attributes: [.font: valueFont, .foregroundColor: valueTextColor],
+                                         haveTwoLineOffset:haveTowLineOffset)
                         
                         if j < data.entryCount && pe?.label != nil
                         {
-                            context.drawText(pe!.label!,
+                            context.drawText(valueText,
                                              at: CGPoint(x: x, y: y + lineHeight),
                                              align: .center,
                                              angleRadians: angleRadians,
@@ -542,7 +559,7 @@ open class PieChartRenderer: NSObject, DataRenderer
                     {
                         if j < data.entryCount && pe?.label != nil
                         {
-                            context.drawText(pe!.label!,
+                            context.drawText(valueText,
                                              at: CGPoint(x: x, y: y + lineHeight / 2.0),
                                              align: .center,
                                              angleRadians: angleRadians,
@@ -552,11 +569,12 @@ open class PieChartRenderer: NSObject, DataRenderer
                     }
                     else if drawYInside
                     {
-                        context.drawText(valueText,
+                        context.drawText(pe!.label!,
                                          at: CGPoint(x: x, y: y + lineHeight / 2.0),
                                          align: .center,
                                          angleRadians: angleRadians,
-                                         attributes: [.font: valueFont, .foregroundColor: valueTextColor])
+                                         attributes: [.font: valueFont, .foregroundColor: valueTextColor],
+                                         haveTwoLineOffset:haveTowLineOffset)
                     }
                 }
 

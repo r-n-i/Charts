@@ -157,21 +157,29 @@ extension CGContext
         NSUIGraphicsPopContext()
     }
 
-    open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?)
+    open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, haveTwoLineOffset:Bool = false)
     {
-        let drawPoint = getDrawPoint(text: text, point: point, align: align, attributes: attributes)
+        let subText = text.count > 10 ? text.prefix(9) + "…" : text
+        let drawPoint = getDrawPoint(text: subText, point: point, align: align, attributes: attributes, haveTwoLineOffset: haveTwoLineOffset)
+        
+        var mutableAttributes = attributes
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 8.0
+        mutableAttributes?.updateValue(paragraphStyle, forKey: .paragraphStyle)
+        
         
         if (angleRadians == 0.0)
         {
             NSUIGraphicsPushContext(self)
             
-            (text as NSString).draw(at: drawPoint, withAttributes: attributes)
+            (subText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: 60, height: subText.count > 5 ? 32 : 12), withAttributes: mutableAttributes)
+//            (text as NSString).draw(at: drawPoint, withAttributes: attributes)
             
             NSUIGraphicsPopContext()
         }
         else
         {
-            drawText(text, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: attributes)
+            drawText(subText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: mutableAttributes)
         }
     }
     
@@ -204,7 +212,8 @@ extension CGContext
             translateBy(x: translate.x, y: translate.y)
             rotate(by: angleRadians)
 
-            (text as NSString).draw(at: drawOffset, withAttributes: attributes)
+            (text as NSString).draw(in: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: 60, height: text.count > 5 ? 32 : 12), withAttributes: attributes)
+//            (text as NSString).draw(at: drawOffset, withAttributes: attributes)
 
             restoreGState()
         }
@@ -227,18 +236,35 @@ extension CGContext
         NSUIGraphicsPopContext()
     }
 
-    private func getDrawPoint(text: String, point: CGPoint, align: TextAlignment, attributes: [NSAttributedString.Key : Any]?) -> CGPoint
+    private func getDrawPoint(text: String, point: CGPoint, align: TextAlignment, attributes: [NSAttributedString.Key : Any]?, haveTwoLineOffset:Bool = false) -> CGPoint
     {
         var point = point
         
         if align == .center
         {
-            point.x -= text.size(withAttributes: attributes).width / 2.0
+//            let size = text.size(withAttributes: attributes)
+//            point.x -= size.width / 2.0
+            point.x -= 60.0 / 2.0
+        }
+        else if align == .justified
+        {
+//            let size = text.size(withAttributes: attributes)
+//            point.x -= size.width / 2.0
+            point.x -= 60.0 / 2.0
+
         }
         else if align == .right
         {
-            point.x -= text.size(withAttributes: attributes).width
+//            let size = text.size(withAttributes: attributes)
+//            point.x -= size.width
+            point.x -= 60.0
         }
+        
+        if haveTwoLineOffset {
+            let size = text.size(withAttributes: attributes)
+            point.y -= size.height
+        }
+        
         return point
     }
     
