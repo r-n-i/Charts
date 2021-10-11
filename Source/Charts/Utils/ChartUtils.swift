@@ -157,10 +157,17 @@ extension CGContext
         NSUIGraphicsPopContext()
     }
 
-    open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, haveTwoLineOffset:Bool = false)
+    open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false, drawWithWidth:Bool = false)
     {
+        var width:CGFloat? = nil
         let subText = text.count > 10 ? text.prefix(9) + "…" : text
-        let drawPoint = getDrawPoint(text: subText, point: point, align: align, attributes: attributes, haveTwoLineOffset: haveTwoLineOffset)
+        if drawWithWidth {
+            let size = subText.size(withAttributes: attributes)
+            width = align == .center ? size.width : size.width < 60 ? size.width : 60
+        }
+        
+        
+        let drawPoint = getDrawPoint(text: subText, point: point, align: align, attributes: attributes, isUpperSemicircle: isUpperSemicircle)
         
 //        var mutableAttributes = attributes
 //        let paragraphStyle = NSMutableParagraphStyle()
@@ -172,18 +179,21 @@ extension CGContext
         {
             NSUIGraphicsPushContext(self)
             
-            (subText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: 60, height: subText.count > 5 ? 32 : 12), withAttributes: attributes)
-//            (text as NSString).draw(at: drawPoint, withAttributes: attributes)
+            if let width = width {
+                (subText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: subText.count > 5 ? 32 : 12), withAttributes: attributes)
+            } else {
+                (subText as NSString).draw(at: drawPoint, withAttributes: attributes)
+            }
             
             NSUIGraphicsPopContext()
         }
         else
         {
-            drawText(subText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: attributes)
+            drawText(subText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: attributes, width: width)
         }
     }
     
-    open func drawText(_ text: String, at point: CGPoint, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat, attributes: [NSAttributedString.Key : Any]?)
+    open func drawText(_ text: String, at point: CGPoint, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat, attributes: [NSAttributedString.Key : Any]?, width: CGFloat? = nil)
     {
         var drawOffset = CGPoint()
 
@@ -212,8 +222,11 @@ extension CGContext
             translateBy(x: translate.x, y: translate.y)
             rotate(by: angleRadians)
 
-            (text as NSString).draw(in: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: 60, height: text.count > 5 ? 32 : 12), withAttributes: attributes)
-//            (text as NSString).draw(at: drawOffset, withAttributes: attributes)
+            if let width = width {
+                (text as NSString).draw(in: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: width, height: text.count > 5 ? 32 : 12), withAttributes: attributes)
+            } else {
+                (text as NSString).draw(at: drawOffset, withAttributes: attributes)
+            }
 
             restoreGState()
         }
@@ -236,30 +249,30 @@ extension CGContext
         NSUIGraphicsPopContext()
     }
 
-    private func getDrawPoint(text: String, point: CGPoint, align: TextAlignment, attributes: [NSAttributedString.Key : Any]?, haveTwoLineOffset:Bool = false) -> CGPoint
+    private func getDrawPoint(text: String, point: CGPoint, align: TextAlignment, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false) -> CGPoint
     {
         var point = point
+        let size = text.size(withAttributes: attributes)
         
         if align == .center
         {
-            let size = text.size(withAttributes: attributes)
             point.x -= size.width / 2.0
         }
         else if align == .justified
         {
 //            let size = text.size(withAttributes: attributes)
 //            point.x -= size.width / 2.0
-            point.x -= 60.0 / 2.0
+            point.x -= size.width < 60 ? size.width : 60 / 2.0
 
         }
         else if align == .right
         {
 //            let size = text.size(withAttributes: attributes)
 //            point.x -= size.width
-            point.x -= 60.0
+            point.x -= size.width < 60 ? size.width : 60
         }
         
-        if haveTwoLineOffset {
+        if isUpperSemicircle && size.width > 60 {
             let size = text.size(withAttributes: attributes)
             point.y -= size.height
         }

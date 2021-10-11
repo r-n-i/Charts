@@ -399,7 +399,7 @@ open class PieChartRenderer: NSObject, DataRenderer
                 
                 var valueTextColor = dataSet.valueTextColorAt(j)
                 let entryLabelColor = dataSet.entryLabelColor
-                var haveTowLineOffset: Bool = false
+                var isUpperSemicircle: Bool = false
                 
                 if let pieData = self.chart?.data as? PieChartData {
                     if (value / pieData.yValueSum < 0.125) {
@@ -456,8 +456,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                         labelPoint = CGPoint(x: pt2.x + 5, y: pt2.y - lineHeight)
                     }
                     
-                    if transformedAngle.truncatingRemainder(dividingBy: 360.0) > 224.0 && transformedAngle.truncatingRemainder(dividingBy: 360.0) < 316.0 && pe!.label!.count > 5 {
-                        haveTowLineOffset = true
+                    if transformedAngle.truncatingRemainder(dividingBy: 360.0) > 180.0 && transformedAngle.truncatingRemainder(dividingBy: 360.0) < 360.0 && pe!.label!.count > 5 {
+                        isUpperSemicircle = true
                     }
 
                     DrawLine: do
@@ -491,7 +491,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          angleRadians: angleRadians,
                                          attributes: [.font: valueFont,
                                                       .foregroundColor: valueTextColor],
-                                         haveTwoLineOffset:haveTowLineOffset)
+                                         isUpperSemicircle:isUpperSemicircle,
+                                         drawWithWidth: true)
                         
                         if j < data.entryCount && pe?.label != nil
                         {
@@ -526,7 +527,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          angleRadians: angleRadians,
                                          attributes: [.font: valueFont,
                                                       .foregroundColor: valueTextColor],
-                                         haveTwoLineOffset:haveTowLineOffset)
+                                         isUpperSemicircle:isUpperSemicircle,
+                                         drawWithWidth: true)
                     }
                 }
 
@@ -543,7 +545,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          align: .center,
                                          angleRadians: angleRadians,
                                          attributes: [.font: valueFont, .foregroundColor: valueTextColor],
-                                         haveTwoLineOffset:haveTowLineOffset)
+                                         isUpperSemicircle:isUpperSemicircle,
+                                         drawWithWidth: true)
                         
                         if j < data.entryCount && pe?.label != nil
                         {
@@ -574,7 +577,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          align: .center,
                                          angleRadians: angleRadians,
                                          attributes: [.font: valueFont, .foregroundColor: valueTextColor],
-                                         haveTwoLineOffset:haveTowLineOffset)
+                                         isUpperSemicircle:isUpperSemicircle,
+                                         drawWithWidth: true)
                     }
                 }
 
