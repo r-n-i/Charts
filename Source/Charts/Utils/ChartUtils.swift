@@ -160,14 +160,20 @@ extension CGContext
     open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false, drawWithWidth:Bool = false)
     {
         var width:CGFloat? = nil
-        let subText = text.count > 10 ? text.prefix(9) + "…" : text
+        var subText:String? = nil
+        
+        if align != .justified {
+            subText = text.count > 10 ? text.prefix(9) + "…" : text
+        }
+        let displayText = subText != nil ? subText! : text
+
         if drawWithWidth {
-            let size = subText.size(withAttributes: attributes)
+            let size = displayText.size(withAttributes: attributes)
             width = align == .justified ? size.width : size.width < 60 ? size.width : 60
         }
         
         
-        let drawPoint = getDrawPoint(text: subText, point: point, align: align, attributes: attributes, isUpperSemicircle: isUpperSemicircle)
+        let drawPoint = getDrawPoint(text: displayText, point: point, align: align, attributes: attributes, isUpperSemicircle: isUpperSemicircle)
         
 //        var mutableAttributes = attributes
 //        let paragraphStyle = NSMutableParagraphStyle()
@@ -180,16 +186,16 @@ extension CGContext
             NSUIGraphicsPushContext(self)
             
             if let width = width {
-                (subText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: subText.count > 5 ? 32 : 12), withAttributes: attributes)
+                (displayText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: displayText.count > 5 ? 32 : 12), withAttributes: attributes)
             } else {
-                (subText as NSString).draw(at: drawPoint, withAttributes: attributes)
+                (displayText as NSString).draw(at: drawPoint, withAttributes: attributes)
             }
             
             NSUIGraphicsPopContext()
         }
         else
         {
-            drawText(subText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: attributes, width: width)
+            drawText(displayText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: attributes, width: width)
         }
     }
     
@@ -256,14 +262,13 @@ extension CGContext
         
         if align == .center
         {
-            point.x -= size.width / 2.0
+            point.x -= size.width < 60 ? size.width / 2.0 : 60 / 2.0
         }
         else if align == .justified
         {
 //            let size = text.size(withAttributes: attributes)
 //            point.x -= size.width / 2.0
-            point.x -= size.width < 60 ? size.width / 2.0 : 60 / 2.0
-
+            point.x -= size.width / 2.0 - 5.0
         }
         else if align == .right
         {
@@ -272,7 +277,7 @@ extension CGContext
             point.x -= size.width < 60 ? size.width : 60
         }
         
-        if isUpperSemicircle && size.width > 60 {
+        if align != .justified && isUpperSemicircle && size.width > 60 {
             let size = text.size(withAttributes: attributes)
             point.y -= size.height
         }
