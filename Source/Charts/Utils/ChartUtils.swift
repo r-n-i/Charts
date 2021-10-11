@@ -242,9 +242,8 @@ extension CGContext
         
         if align == .center
         {
-//            let size = text.size(withAttributes: attributes)
-//            point.x -= size.width / 2.0
-            point.x -= 60.0 / 2.0
+            let size = text.size(withAttributes: attributes)
+            point.x -= size.width / 2.0
         }
         else if align == .justified
         {
