@@ -163,7 +163,7 @@ extension CGContext
         let subText = text.count > 10 ? text.prefix(9) + "…" : text
         if drawWithWidth {
             let size = subText.size(withAttributes: attributes)
-            width = align == .center ? size.width : size.width < 60 ? size.width : 60
+            width = align == .justified ? size.width : size.width < 60 ? size.width : 60
         }
         
         
