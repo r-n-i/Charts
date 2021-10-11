@@ -9,7 +9,6 @@
 //  https://github.com/danielgindi/Charts
 //
 
-import UIKit
 import Foundation
 import CoreGraphics
 
@@ -163,24 +162,24 @@ extension CGContext
         let subText = text.count > 10 ? text.prefix(9) + "…" : text
         let drawPoint = getDrawPoint(text: subText, point: point, align: align, attributes: attributes, haveTwoLineOffset: haveTwoLineOffset)
         
-        var mutableAttributes = attributes
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 8.0
-        mutableAttributes?.updateValue(paragraphStyle, forKey: .paragraphStyle)
+//        var mutableAttributes = attributes
+//        let paragraphStyle = NSMutableParagraphStyle()
+//        paragraphStyle.lineSpacing = 8.0
+//        mutableAttributes?.updateValue(paragraphStyle, forKey: .paragraphStyle)
         
         
         if (angleRadians == 0.0)
         {
             NSUIGraphicsPushContext(self)
             
-            (subText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: 60, height: subText.count > 5 ? 32 : 12), withAttributes: mutableAttributes)
+            (subText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: 60, height: subText.count > 5 ? 32 : 12), withAttributes: attributes)
 //            (text as NSString).draw(at: drawPoint, withAttributes: attributes)
             
             NSUIGraphicsPopContext()
         }
         else
         {
-            drawText(subText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: mutableAttributes)
+            drawText(subText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: attributes)
         }
     }
     
