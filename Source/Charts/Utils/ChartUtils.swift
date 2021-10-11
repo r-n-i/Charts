@@ -262,7 +262,7 @@ extension CGContext
         {
 //            let size = text.size(withAttributes: attributes)
 //            point.x -= size.width / 2.0
-            point.x -= size.width < 60 ? size.width : 60 / 2.0
+            point.x -= size.width < 60 ? size.width / 2.0 : 60 / 2.0
 
         }
         else if align == .right
