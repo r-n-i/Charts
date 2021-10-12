@@ -273,7 +273,7 @@ extension CGContext
         {
 //            let size = text.size(withAttributes: attributes)
 //            point.x -= size.width
-            point.x -= size.width < 72 ? size.width - 5 : 50
+            point.x -= size.width < 72 ? size.width - 5 : 55
         }
         
         if align != .justified && isUpperSemicircle && size.width > 72 {
