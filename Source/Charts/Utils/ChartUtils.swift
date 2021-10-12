@@ -162,14 +162,13 @@ extension CGContext
         var width:CGFloat? = nil
         var subText:String? = nil
         
-        if align != .justified {
-            subText = text.count > 10 ? text.prefix(9) + "…" : text
-        }
+        subText = text.count > 12 ? text.prefix(11) + "…" : text
+
         let displayText = subText != nil ? subText! : text
 
         if drawWithWidth {
             let size = displayText.size(withAttributes: attributes)
-            width = align == .justified ? size.width : size.width < 60 ? size.width : 60
+            width = align == .justified ? size.width : size.width < 72 ? size.width : 72
         }
         
         
@@ -186,7 +185,7 @@ extension CGContext
             NSUIGraphicsPushContext(self)
             
             if let width = width {
-                (displayText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: displayText.count > 5 ? 32 : 12), withAttributes: attributes)
+                (displayText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: displayText.count > 6 ? 32 : 12), withAttributes: attributes)
             } else {
                 (displayText as NSString).draw(at: drawPoint, withAttributes: attributes)
             }
@@ -229,7 +228,7 @@ extension CGContext
             rotate(by: angleRadians)
 
             if let width = width {
-                (text as NSString).draw(in: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: width, height: text.count > 5 ? 32 : 12), withAttributes: attributes)
+                (text as NSString).draw(in: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: width, height: text.count > 6 ? 32 : 12), withAttributes: attributes)
             } else {
                 (text as NSString).draw(at: drawOffset, withAttributes: attributes)
             }
@@ -262,7 +261,7 @@ extension CGContext
         
         if align == .center
         {
-            point.x -= size.width < 60 ? size.width / 2.0 : 60 / 2.0
+            point.x -= size.width < 72 ? size.width / 2.0 : 72 / 2.0
         }
         else if align == .justified
         {
@@ -274,10 +273,10 @@ extension CGContext
         {
 //            let size = text.size(withAttributes: attributes)
 //            point.x -= size.width
-            point.x -= size.width < 60 ? size.width : 60
+            point.x -= size.width < 72 ? size.width - 5 : 50
         }
         
-        if align != .justified && isUpperSemicircle && size.width > 60 {
+        if align != .justified && isUpperSemicircle && size.width > 72 {
             let size = text.size(withAttributes: attributes)
             point.y -= size.height
         }
