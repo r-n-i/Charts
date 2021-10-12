@@ -168,7 +168,7 @@ extension CGContext
 
         if drawWithWidth {
             let size = displayText.size(withAttributes: attributes)
-            width = align == .justified ? size.width : size.width < 72 ? size.width : 72
+            width = align == .justified ? size.width : size.width < 73 ? size.width : 73
         }
         
         
@@ -261,7 +261,7 @@ extension CGContext
         
         if align == .center
         {
-            point.x -= size.width < 72 ? size.width / 2.0 : 72 / 2.0
+            point.x -= size.width < 73 ? size.width / 2.0 : 73 / 2.0
         }
         else if align == .justified
         {
@@ -273,10 +273,10 @@ extension CGContext
         {
 //            let size = text.size(withAttributes: attributes)
 //            point.x -= size.width
-            point.x -= size.width < 72 ? size.width : 55
+            point.x -= size.width < 73 ? size.width : 55
         }
         
-        if align != .justified && isUpperSemicircle && size.width > 72 {
+        if align != .justified && isUpperSemicircle && size.width > 73 {
             let size = text.size(withAttributes: attributes)
             point.y -= size.height
         }
