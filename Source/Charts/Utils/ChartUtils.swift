@@ -162,39 +162,43 @@ extension CGContext
         var width:CGFloat? = nil
         var subText:String? = nil
         
+        var mutableAttributes = attributes
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 8.0
+        if align == .right {
+            paragraphStyle.alignment = .right
+        }
+        mutableAttributes?.updateValue(paragraphStyle, forKey: .paragraphStyle)
+        
         subText = text.count > 12 ? text.prefix(11) + "…" : text
 
         let displayText = subText != nil ? subText! : text
 
         if drawWithWidth {
-            let size = displayText.size(withAttributes: attributes)
-            width = align == .justified ? size.width : size.width < 73 ? size.width : 73
+            let size = displayText.size(withAttributes: mutableAttributes)
+            width = align == .center ? size.width : size.width < 73 ? size.width : 73
         }
         
         
-        let drawPoint = getDrawPoint(text: displayText, point: point, align: align, attributes: attributes, isUpperSemicircle: isUpperSemicircle)
-        
-//        var mutableAttributes = attributes
-//        let paragraphStyle = NSMutableParagraphStyle()
-//        paragraphStyle.lineSpacing = 8.0
-//        mutableAttributes?.updateValue(paragraphStyle, forKey: .paragraphStyle)
-        
+        let drawPoint = getDrawPoint(text: displayText, point: point, align: align, attributes: mutableAttributes, isUpperSemicircle: isUpperSemicircle)
         
         if (angleRadians == 0.0)
         {
             NSUIGraphicsPushContext(self)
             
             if let width = width {
-                (displayText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: displayText.count > 6 ? 32 : 12), withAttributes: attributes)
+//                drawMultilineText(text, at: point, constrainedTo: CGSize.init(width: width, height: displayText.count > 6 ? 32 : 12), anchor: anchor, knownTextSize: CGSize.init(width: width, height: text.count > 6 ? 32 : 12), angleRadians: angleRadians, attributes: mutableAttributes)
+//                (displayText as NSString).draw(with: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: displayText.count > 6 ? 32 : 12), options: .usesLineFragmentOrigin, attributes: mutableAttributes, context: nil)
+                (displayText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: displayText.count > 6 ? 32 : 12), withAttributes: mutableAttributes)
             } else {
-                (displayText as NSString).draw(at: drawPoint, withAttributes: attributes)
+                (displayText as NSString).draw(at: drawPoint, withAttributes: mutableAttributes)
             }
             
             NSUIGraphicsPopContext()
         }
         else
         {
-            drawText(displayText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: attributes, width: width)
+            drawText(displayText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: mutableAttributes, width: width)
         }
     }
     
@@ -228,6 +232,8 @@ extension CGContext
             rotate(by: angleRadians)
 
             if let width = width {
+//                drawMultilineText(text, at: point, constrainedTo: CGSize.init(width: width, height: text.count > 6 ? 32 : 12), anchor: anchor, knownTextSize: CGSize.init(width: width, height: text.count > 6 ? 32 : 12), angleRadians: angleRadians, attributes: attributes)
+//                (text as NSString).draw(with: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: width, height: text.count > 6 ? 32 : 12), options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
                 (text as NSString).draw(in: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: width, height: text.count > 6 ? 32 : 12), withAttributes: attributes)
             } else {
                 (text as NSString).draw(at: drawOffset, withAttributes: attributes)
@@ -261,24 +267,17 @@ extension CGContext
         
         if align == .center
         {
-            point.x -= size.width < 73 ? size.width / 2.0 : 73 / 2.0
-        }
-        else if align == .justified
-        {
-//            let size = text.size(withAttributes: attributes)
-//            point.x -= size.width / 2.0
             point.x -= size.width / 2.0 - 5.0
         }
         else if align == .right
         {
 //            let size = text.size(withAttributes: attributes)
 //            point.x -= size.width
-            point.x -= size.width < 73 ? size.width : 55
+            point.x -= size.width < 73 ? size.width : 73
         }
         
-        if align != .justified && isUpperSemicircle && size.width > 73 {
-            let size = text.size(withAttributes: attributes)
-            point.y -= size.height
+        if align != .center && isUpperSemicircle && size.width > 73 {
+            point.y -= text.count > 6 ? 22 : 12
         }
         
         return point
