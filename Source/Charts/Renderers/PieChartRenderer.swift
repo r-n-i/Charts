@@ -402,8 +402,14 @@ open class PieChartRenderer: NSObject, DataRenderer
                 var isUpperSemicircle: Bool = false
                 
                 if let pieData = self.chart?.data as? PieChartData {
-                    if (value / pieData.yValueSum < 0.125) {
-                        valueTextColor = .clear
+                    if usePercentValuesEnabled {
+                        if (value < 12.5) {
+                            valueTextColor = .clear
+                        }
+                    } else {
+                        if (value / pieData.yValueSum < 0.125) {
+                            valueTextColor = .clear
+                        }
                     }
                 }
                 
@@ -489,8 +495,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          at: labelPoint,
                                          align: align,
                                          angleRadians: angleRadians,
-                                         attributes: [.font: valueFont,
-                                                      .foregroundColor: valueTextColor],
+                                         attributes: [.font: entryLabelFont ?? valueFont,
+                                                      .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
                                          drawWithWidth: true)
                         
@@ -501,8 +507,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                                          y: labelPoint.y + lineHeight),
                                              align: align,
                                              angleRadians: angleRadians,
-                                             attributes: [.font: entryLabelFont ?? valueFont,
-                                                          .foregroundColor: entryLabelColor ?? valueTextColor])
+                                             attributes: [.font: valueFont,
+                                                          .foregroundColor: valueTextColor])
                         }
                     }
                     else if drawXOutside
@@ -514,8 +520,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                                          y: labelPoint.y + lineHeight / 2.0),
                                              align: align,
                                              angleRadians: angleRadians,
-                                             attributes: [.font: entryLabelFont ?? valueFont,
-                                                          .foregroundColor: entryLabelColor ?? valueTextColor])
+                                             attributes: [.font: valueFont,
+                                                          .foregroundColor: valueTextColor])
                         }
                     }
                     else if drawYOutside
@@ -525,8 +531,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                                      y: labelPoint.y + lineHeight / 2.0 ),
                                          align: align,
                                          angleRadians: angleRadians,
-                                         attributes: [.font: valueFont,
-                                                      .foregroundColor: valueTextColor],
+                                         attributes: [.font: entryLabelFont ?? valueFont,
+                                                      .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
                                          drawWithWidth: true)
                     }
@@ -544,7 +550,7 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          at: CGPoint(x: x, y: y),
                                          align: .center,
                                          angleRadians: angleRadians,
-                                         attributes: [.font: valueFont, .foregroundColor: valueTextColor],
+                                         attributes: [.font: entryLabelFont ?? valueFont, .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
                                          drawWithWidth: true)
                         
@@ -554,8 +560,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                              at: CGPoint(x: x, y: y + lineHeight),
                                              align: .center,
                                              angleRadians: angleRadians,
-                                             attributes: [.font: entryLabelFont ?? valueFont,
-                                                          .foregroundColor: entryLabelColor ?? valueTextColor])
+                                             attributes: [.font: valueFont,
+                                                          .foregroundColor: valueTextColor])
                         }
                     }
                     else if drawXInside
@@ -566,8 +572,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                              at: CGPoint(x: x, y: y + lineHeight / 2.0),
                                              align: .center,
                                              angleRadians: angleRadians,
-                                             attributes: [.font: entryLabelFont ?? valueFont,
-                                                          .foregroundColor: entryLabelColor ?? valueTextColor])
+                                             attributes: [.font: valueFont,
+                                                          .foregroundColor: valueTextColor])
                         }
                     }
                     else if drawYInside
@@ -576,7 +582,7 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          at: CGPoint(x: x, y: y + lineHeight / 2.0),
                                          align: .center,
                                          angleRadians: angleRadians,
-                                         attributes: [.font: valueFont, .foregroundColor: valueTextColor],
+                                         attributes: [.font: entryLabelFont ?? valueFont, .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
                                          drawWithWidth: true)
                     }

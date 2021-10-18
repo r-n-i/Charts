@@ -82,8 +82,9 @@ class PiePolylineChartViewController: DemoBaseViewController {
         //set.xValuePosition = .outsideSlice
         set.yValuePosition = .outsideSlice
         
-        let font = UIFont.init(name: "HiraKakuProN-W6", size: 12.0) ?? UIFont.systemFont(ofSize: 12.0)
+        let font = UIFont.init(name: "HiraKakuProN-W6", size: 12.0) ?? UIFont.boldSystemFont(ofSize: 12.0)
         set.valueFont = font
+        set.entryLabelFont = font
         
         let data = PieChartData(dataSet: set)
         
