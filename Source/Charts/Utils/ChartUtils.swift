@@ -189,8 +189,6 @@ extension CGContext
             NSUIGraphicsPushContext(self)
             
             if let width = width {
-//                drawMultilineText(text, at: point, constrainedTo: CGSize.init(width: width, height: displayText.count > 6 ? 32 : 12), anchor: anchor, knownTextSize: CGSize.init(width: width, height: text.count > 6 ? 32 : 12), angleRadians: angleRadians, attributes: mutableAttributes)
-//                (displayText as NSString).draw(with: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: displayText.count > 6 ? 32 : 12), options: .usesLineFragmentOrigin, attributes: mutableAttributes, context: nil)
                 (displayText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: displayText.count > 6 ? 32 : 12), withAttributes: mutableAttributes)
             } else {
                 (displayText as NSString).draw(at: drawPoint, withAttributes: mutableAttributes)
@@ -234,8 +232,6 @@ extension CGContext
             rotate(by: angleRadians)
 
             if let width = width {
-//                drawMultilineText(text, at: point, constrainedTo: CGSize.init(width: width, height: text.count > 6 ? 32 : 12), anchor: anchor, knownTextSize: CGSize.init(width: width, height: text.count > 6 ? 32 : 12), angleRadians: angleRadians, attributes: attributes)
-//                (text as NSString).draw(with: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: width, height: text.count > 6 ? 32 : 12), options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
                 (text as NSString).draw(in: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: width, height: text.count > 6 ? 32 : 12), withAttributes: attributes)
             } else {
                 (text as NSString).draw(at: drawOffset, withAttributes: attributes)
@@ -273,13 +269,19 @@ extension CGContext
         }
         else if align == .right
         {
-//            let size = text.size(withAttributes: attributes)
-//            point.x -= size.width
             point.x -= size.width < 73 ? size.width : 73
+        }
+        else if align == .left
+        {
+            point.x -= 4
         }
         
         if align != .center && isUpperSemicircle && size.width > 73 {
             point.y -= text.count > 6 ? 22 : 12
+        } else if align == .center && isUpperSemicircle {
+            point.y -= 4
+        } else if align == .center && !isUpperSemicircle {
+            point.y += 4
         }
         
         return point
