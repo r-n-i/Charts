@@ -163,13 +163,15 @@ extension CGContext
         var subText:String? = nil
         
         var mutableAttributes = attributes
-        let paragraphStyle = NSMutableParagraphStyle()
+        let paragraphStyle = MutableParagraphStyle()
         paragraphStyle.lineSpacing = 8.0
+        paragraphStyle.lineBreakMode = .byCharWrapping
         if align == .right {
             paragraphStyle.alignment = .right
         }
         mutableAttributes?.updateValue(paragraphStyle, forKey: .paragraphStyle)
         
+//        subText = text.count > 13 ? String(text.prefix(13)) : text
         subText = text.count > 12 ? text.prefix(11) + "…" : text
 
         let displayText = subText != nil ? subText! : text
