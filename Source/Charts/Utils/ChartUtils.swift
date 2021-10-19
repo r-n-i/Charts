@@ -159,9 +159,6 @@ extension CGContext
 
     open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false, drawWithWidth:Bool = false)
     {
-        var width:CGFloat? = nil
-        var subText:String? = nil
-        
         var mutableAttributes = attributes
         let paragraphStyle = MutableParagraphStyle()
         paragraphStyle.lineSpacing = 8.0
@@ -171,25 +168,35 @@ extension CGContext
         }
         mutableAttributes?.updateValue(paragraphStyle, forKey: .paragraphStyle)
         
-//        subText = text.count > 13 ? String(text.prefix(13)) : text
-        subText = text.count > 12 ? text.prefix(11) + "…" : text
-
-        let displayText = subText != nil ? subText! : text
-
-        if drawWithWidth {
-            let size = displayText.size(withAttributes: mutableAttributes)
-            width = align == .center ? size.width : size.width < 73 ? size.width : 73
-        }
+        var height:CGFloat? = nil
+        var width:CGFloat? = nil
+        var x:CGFloat? = nil
+        var y:CGFloat? = nil
+        var subText:String? = nil
         
+        subText = text.count > 12 ? text.prefix(11) + "…" : text
+        let displayText = subText != nil ? subText! : text
         
         let drawPoint = getDrawPoint(text: displayText, point: point, align: align, attributes: mutableAttributes, isUpperSemicircle: isUpperSemicircle)
+        if drawWithWidth {
+            let size = displayText.size(withAttributes: mutableAttributes)
+            height = displayText.count > 6 ? 32 : 12
+            width = align == .center ? size.width : (size.width < 73 ? size.width : 73)
+            x = drawPoint.x
+            y = drawPoint.y
+            if drawPoint.x < 0 {
+                height = 32
+                width! += drawPoint.x
+                x = 0
+            }
+        }
         
         if (angleRadians == 0.0)
         {
             NSUIGraphicsPushContext(self)
             
-            if let width = width {
-                (displayText as NSString).draw(in: CGRect.init(x: drawPoint.x, y: drawPoint.y, width: width, height: displayText.count > 6 ? 32 : 12), withAttributes: mutableAttributes)
+            if let width = width, let height = height, let x = x, let y = y {
+                (displayText as NSString).draw(in: CGRect.init(x: x, y: y, width: width, height: height), withAttributes: mutableAttributes)
             } else {
                 (displayText as NSString).draw(at: drawPoint, withAttributes: mutableAttributes)
             }
@@ -198,11 +205,11 @@ extension CGContext
         }
         else
         {
-            drawText(displayText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: mutableAttributes, width: width)
+            drawText(displayText, at: drawPoint, anchor: anchor, angleRadians: angleRadians, attributes: mutableAttributes, width: width, height: height)
         }
     }
     
-    open func drawText(_ text: String, at point: CGPoint, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat, attributes: [NSAttributedString.Key : Any]?, width: CGFloat? = nil)
+    open func drawText(_ text: String, at point: CGPoint, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat, attributes: [NSAttributedString.Key : Any]?, width: CGFloat? = nil, height: CGFloat? = nil)
     {
         var drawOffset = CGPoint()
 
@@ -231,8 +238,8 @@ extension CGContext
             translateBy(x: translate.x, y: translate.y)
             rotate(by: angleRadians)
 
-            if let width = width {
-                (text as NSString).draw(in: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: width, height: text.count > 6 ? 32 : 12), withAttributes: attributes)
+            if let width = width, let height = height{
+                (text as NSString).draw(in: CGRect.init(x: drawOffset.x, y: drawOffset.y, width: width, height: height), withAttributes: attributes)
             } else {
                 (text as NSString).draw(at: drawOffset, withAttributes: attributes)
             }
@@ -271,9 +278,15 @@ extension CGContext
         {
             point.x -= size.width < 73 ? size.width : 73
         }
+        else if align == .left
+        {
+            point.x -= 4
+        }
         
-        if align != .center && isUpperSemicircle && size.width > 73 {
+        if (align != .center && isUpperSemicircle && size.width > 73) {
             point.y -= text.count > 6 ? 22 : 12
+        } else if point.x < 0 && isUpperSemicircle {
+            point.y -= 22
         } else if align == .center && isUpperSemicircle {
             point.y -= 4
         } else if align == .center && !isUpperSemicircle {
