@@ -498,7 +498,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          attributes: [.font: entryLabelFont ?? valueFont,
                                                       .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
-                                         drawWithWidth: true)
+                                         drawWithWidth: true,
+                                         maxWidth: center.x * 2)
                         
                         if j < data.entryCount && pe?.label != nil
                         {
@@ -534,7 +535,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          attributes: [.font: entryLabelFont ?? valueFont,
                                                       .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
-                                         drawWithWidth: true)
+                                         drawWithWidth: true,
+                                         maxWidth: center.x * 2)
                     }
                 }
 
@@ -552,7 +554,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          angleRadians: angleRadians,
                                          attributes: [.font: entryLabelFont ?? valueFont, .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
-                                         drawWithWidth: true)
+                                         drawWithWidth: true,
+                                         maxWidth: center.x * 2)
                         
                         if j < data.entryCount && pe?.label != nil
                         {
@@ -584,7 +587,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          angleRadians: angleRadians,
                                          attributes: [.font: entryLabelFont ?? valueFont, .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
-                                         drawWithWidth: true)
+                                         drawWithWidth: true,
+                                         maxWidth: center.x * 2)
                     }
                 }
 

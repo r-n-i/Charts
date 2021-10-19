@@ -157,7 +157,7 @@ extension CGContext
         NSUIGraphicsPopContext()
     }
 
-    open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false, drawWithWidth:Bool = false)
+    open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false, drawWithWidth:Bool = false, maxWidth:CGFloat? = nil)
     {
         var mutableAttributes = attributes
         let paragraphStyle = MutableParagraphStyle()
@@ -167,6 +167,9 @@ extension CGContext
             paragraphStyle.alignment = .right
         }
         mutableAttributes?.updateValue(paragraphStyle, forKey: .paragraphStyle)
+        let font:NSUIFont = mutableAttributes?[.font] as! NSUIFont
+        let twoLineHeight = font.pointSize * 2 + paragraphStyle.lineSpacing
+        let textMaxWidth = font.pointSize * 7 + 1
         
         var height:CGFloat? = nil
         var width:CGFloat? = nil
@@ -179,15 +182,22 @@ extension CGContext
         
         let drawPoint = getDrawPoint(text: displayText, point: point, align: align, attributes: mutableAttributes, isUpperSemicircle: isUpperSemicircle)
         if drawWithWidth {
+            guard let maxWidth = maxWidth else {
+                return
+            }
             let size = displayText.size(withAttributes: mutableAttributes)
-            height = displayText.count > 6 ? 32 : 12
-            width = align == .center ? size.width : (size.width < 73 ? size.width : 73)
+            height = displayText.count > 6 ? twoLineHeight : font.pointSize
+            width = align == .center ? size.width : (size.width < textMaxWidth ? size.width : textMaxWidth)
             x = drawPoint.x
             y = drawPoint.y
             if drawPoint.x < 0 {
-                height = 32
+                height = twoLineHeight
                 width! += drawPoint.x
                 x = 0
+            }
+            else if drawPoint.x + width! > maxWidth {
+                height = twoLineHeight
+                width! -= drawPoint.x + width! - maxWidth
             }
         }
         
@@ -269,28 +279,31 @@ extension CGContext
     {
         var point = point
         let size = text.size(withAttributes: attributes)
-        
+        let font:NSUIFont = attributes?[.font] as! NSUIFont
+        let paragraphStyle:ParagraphStyle = attributes?[.paragraphStyle] as! ParagraphStyle
+        let maxWidth = font.pointSize * 7 + 1
+
         if align == .center
         {
             point.x -= size.width / 2.0 - 5.0
         }
         else if align == .right
         {
-            point.x -= size.width < 73 ? size.width : 73
+            point.x -= size.width < maxWidth ? size.width : maxWidth
         }
         else if align == .left
         {
-            point.x -= 4
+            point.x -= 4.0
         }
         
-        if (align != .center && isUpperSemicircle && size.width > 73) {
-            point.y -= text.count > 6 ? 22 : 12
+        if (align != .center && isUpperSemicircle && size.width > maxWidth) {
+            point.y -= text.count > 6 ? font.pointSize + paragraphStyle.lineSpacing : font.pointSize
         } else if point.x < 0 && isUpperSemicircle {
-            point.y -= 22
+            point.y -= font.pointSize + paragraphStyle.lineSpacing
         } else if align == .center && isUpperSemicircle {
-            point.y -= 4
+            point.y -= 4.0
         } else if align == .center && !isUpperSemicircle {
-            point.y += 4
+            point.y += 4.0
         }
         
         return point
