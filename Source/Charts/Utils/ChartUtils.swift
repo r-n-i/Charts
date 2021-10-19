@@ -271,10 +271,6 @@ extension CGContext
         {
             point.x -= size.width < 73 ? size.width : 73
         }
-        else if align == .left
-        {
-            point.x -= 4
-        }
         
         if align != .center && isUpperSemicircle && size.width > 73 {
             point.y -= text.count > 6 ? 22 : 12
