@@ -180,7 +180,7 @@ extension CGContext
         subText = text.count > 12 ? text.prefix(11) + "…" : text
         let displayText = subText != nil ? subText! : text
         
-        let drawPoint = getDrawPoint(text: displayText, point: point, align: align, attributes: mutableAttributes, isUpperSemicircle: isUpperSemicircle)
+        let drawPoint = getDrawPoint(text: displayText, point: point, align: align, attributes: mutableAttributes, isUpperSemicircle: isUpperSemicircle, maxWidth: maxWidth)
         if drawWithWidth {
             guard let maxWidth = maxWidth else {
                 return
@@ -275,13 +275,13 @@ extension CGContext
         NSUIGraphicsPopContext()
     }
 
-    private func getDrawPoint(text: String, point: CGPoint, align: TextAlignment, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false) -> CGPoint
+    private func getDrawPoint(text: String, point: CGPoint, align: TextAlignment, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false, maxWidth:CGFloat? = nil) -> CGPoint
     {
         var point = point
         let size = text.size(withAttributes: attributes)
         let font:NSUIFont = attributes?[.font] as! NSUIFont
         let paragraphStyle:ParagraphStyle = attributes?[.paragraphStyle] as! ParagraphStyle
-        let maxWidth = font.pointSize * 7 + 1
+        let textMaxWidth = font.pointSize * 7 + 1
 
         if align == .center
         {
@@ -289,17 +289,21 @@ extension CGContext
         }
         else if align == .right
         {
-            point.x -= size.width < maxWidth ? size.width : maxWidth
+            point.x -= size.width < textMaxWidth ? size.width : textMaxWidth
         }
         else if align == .left
         {
             point.x -= 4.0
         }
         
-        if (align != .center && isUpperSemicircle && size.width > maxWidth) {
+        if (align != .center && isUpperSemicircle && size.width > textMaxWidth) {
             point.y -= text.count > 6 ? font.pointSize + paragraphStyle.lineSpacing : font.pointSize
         } else if point.x < 0 && isUpperSemicircle {
             point.y -= font.pointSize + paragraphStyle.lineSpacing
+        } else if let maxWidth = maxWidth {
+            if (maxWidth - point.x < min(size.width, textMaxWidth) && isUpperSemicircle) {
+                point.y -= font.pointSize + paragraphStyle.lineSpacing
+            }
         } else if align == .center && isUpperSemicircle {
             point.y -= 4.0
         } else if align == .center && !isUpperSemicircle {
