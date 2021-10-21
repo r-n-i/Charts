@@ -169,7 +169,7 @@ extension CGContext
         mutableAttributes?.updateValue(paragraphStyle, forKey: .paragraphStyle)
         let font:NSUIFont = mutableAttributes?[.font] as! NSUIFont
         let twoLineHeight = font.pointSize * 2 + paragraphStyle.lineSpacing
-        let textMaxWidth = font.pointSize * 7 + 1
+        let textMaxWidth = font.pointSize * 6 + 1
         
         var height:CGFloat? = nil
         var width:CGFloat? = nil
@@ -178,7 +178,7 @@ extension CGContext
         var subText:String? = nil
         
         subText = text.count > 12 ? text.prefix(11) + "…" : text
-        let displayText = subText != nil ? subText! : text
+        var displayText = subText != nil ? subText! : text
         
         let drawPoint = getDrawPoint(text: displayText, point: point, align: align, attributes: mutableAttributes, isUpperSemicircle: isUpperSemicircle, maxWidth: maxWidth)
         if drawWithWidth {
@@ -206,6 +206,10 @@ extension CGContext
             NSUIGraphicsPushContext(self)
             
             if let width = width, let height = height, let x = x, let y = y {
+                let maxDisplayTextCount:Int = Int(width / font.pointSize) * Int(height / font.pointSize)
+                if displayText.count > maxDisplayTextCount {
+                    displayText = text.prefix(maxDisplayTextCount - 1) + "…"
+                }
                 (displayText as NSString).draw(in: CGRect.init(x: x, y: y, width: width, height: height), withAttributes: mutableAttributes)
             } else {
                 (displayText as NSString).draw(at: drawPoint, withAttributes: mutableAttributes)
@@ -281,7 +285,7 @@ extension CGContext
         let size = text.size(withAttributes: attributes)
         let font:NSUIFont = attributes?[.font] as! NSUIFont
         let paragraphStyle:ParagraphStyle = attributes?[.paragraphStyle] as! ParagraphStyle
-        let textMaxWidth = font.pointSize * 7 + 1
+        let textMaxWidth = font.pointSize * 6 + 1
 
         if align == .center
         {
