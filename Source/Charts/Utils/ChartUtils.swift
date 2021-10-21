@@ -187,7 +187,7 @@ extension CGContext
             }
             let size = displayText.size(withAttributes: mutableAttributes)
             height = displayText.count > 6 ? twoLineHeight : font.pointSize
-            width = align == .center ? size.width : (size.width < textMaxWidth ? size.width : textMaxWidth)
+            width = align == .center ? ceil(size.width) + 1 : (ceil(size.width) < textMaxWidth ? ceil(size.width) + 1 : textMaxWidth)
             x = drawPoint.x
             y = drawPoint.y
             if drawPoint.x < 0 {
