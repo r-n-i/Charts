@@ -162,6 +162,7 @@ extension CGContext
         var mutableAttributes = attributes
         let paragraphStyle = MutableParagraphStyle()
         paragraphStyle.lineSpacing = 8.0
+        paragraphStyle.lineBreakMode = .byCharWrapping
         if align == .right {
             paragraphStyle.alignment = .right
         }
