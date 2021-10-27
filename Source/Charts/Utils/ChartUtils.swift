@@ -157,7 +157,7 @@ extension CGContext
         NSUIGraphicsPopContext()
     }
 
-    open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false, drawWithWidth:Bool = false, maxWidth:CGFloat? = nil)
+    open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false, drawWithWidth:Bool = false, maxWidth:CGFloat? = nil, maxHeight:CGFloat? = nil)
     {
         var mutableAttributes = attributes
         let paragraphStyle = MutableParagraphStyle()
@@ -180,7 +180,7 @@ extension CGContext
         subText = text.count > 12 ? text.prefix(11) + "…" : text
         var displayText = subText != nil ? subText! : text
         
-        let drawPoint = getDrawPoint(text: displayText, point: point, align: align, attributes: mutableAttributes, isUpperSemicircle: isUpperSemicircle, maxWidth: maxWidth)
+        var drawPoint = getDrawPoint(text: displayText, point: point, align: align, attributes: mutableAttributes, isUpperSemicircle: isUpperSemicircle, maxWidth: maxWidth)
         if drawWithWidth {
             guard let maxWidth = maxWidth else {
                 return
@@ -194,11 +194,21 @@ extension CGContext
                 height = twoLineHeight
                 width! += drawPoint.x
                 x = 0
-            }
-            else if drawPoint.x + width! > maxWidth {
+            } else if drawPoint.x + width! > maxWidth {
                 height = twoLineHeight
                 width! -= drawPoint.x + width! - maxWidth
             }
+            
+            if let maxHeight = maxHeight {
+                if drawPoint.y < 0 {
+                    drawPoint.y += font.pointSize + paragraphStyle.lineSpacing
+                    y = drawPoint.y
+                    height = font.pointSize
+                } else if drawPoint.y + (height ?? font.pointSize) > maxHeight {
+                    height = font.pointSize
+                }
+            }
+            
         }
         
         if (angleRadians == 0.0)

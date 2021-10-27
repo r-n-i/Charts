@@ -499,7 +499,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                                       .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
                                          drawWithWidth: true,
-                                         maxWidth: center.x * 2)
+                                         maxWidth: center.x * 2,
+                                         maxHeight: center.y * 2)
                         
                         if j < data.entryCount && pe?.label != nil
                         {
@@ -536,7 +537,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                                       .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
                                          drawWithWidth: true,
-                                         maxWidth: center.x * 2)
+                                         maxWidth: center.x * 2,
+                                         maxHeight: center.y * 2)
                     }
                 }
 
@@ -555,7 +557,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          attributes: [.font: entryLabelFont ?? valueFont, .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
                                          drawWithWidth: true,
-                                         maxWidth: center.x * 2)
+                                         maxWidth: center.x * 2,
+                                         maxHeight: center.y * 2)
                         
                         if j < data.entryCount && pe?.label != nil
                         {
@@ -588,7 +591,8 @@ open class PieChartRenderer: NSObject, DataRenderer
                                          attributes: [.font: entryLabelFont ?? valueFont, .foregroundColor: entryLabelColor ?? valueTextColor],
                                          isUpperSemicircle:isUpperSemicircle,
                                          drawWithWidth: true,
-                                         maxWidth: center.x * 2)
+                                         maxWidth: center.x * 2,
+                                         maxHeight: center.y * 2)
                     }
                 }
 
