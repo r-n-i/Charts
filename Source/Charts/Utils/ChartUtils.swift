@@ -215,9 +215,12 @@ extension CGContext
         {
             NSUIGraphicsPushContext(self)
             
-            if let width = width, let height = height, let x = x, let y = y {
+            if var width = width, let height = height, let x = x, let y = y {
+                if width < font.pointSize {
+                    width = font.pointSize
+                }
                 let maxDisplayTextCount:Int = Int(width / font.pointSize) * Int(height / font.pointSize)
-                if displayText.count > maxDisplayTextCount {
+                if displayText.count > 6 && displayText.count > maxDisplayTextCount {
                     displayText = text.prefix(maxDisplayTextCount - 1) + "…"
                 }
                 (displayText as NSString).draw(in: CGRect.init(x: x, y: y, width: width, height: height), withAttributes: mutableAttributes)
