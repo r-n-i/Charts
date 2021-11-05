@@ -62,7 +62,7 @@ class PiePolylineChartViewController: DemoBaseViewController {
     func setDataCount(_ count: Int, range: UInt32) {
         let entries = (0..<count).map { (i) -> PieChartDataEntry in
             // IMPORTANT: In a PieChart, no values (Entry) should have the same xIndex (even if from different DataSets), since no values can be drawn above each other.
-            return PieChartDataEntry(value: Double(arc4random_uniform(range) + range / 5),
+            return PieChartDataEntry(value: 50,
                                      label: parties[i % parties.count])
         }
         
@@ -74,10 +74,10 @@ class PiePolylineChartViewController: DemoBaseViewController {
         
         set.colors = colors
         set.valueColors = colors
-        set.valueLineColor = .clear
+//        set.valueLineColor = .clear
         
         set.valueLinePart1OffsetPercentage = 0.8
-        set.valueLinePart1Length = 0.38
+        set.valueLinePart1Length = 0.34
         set.valueLinePart2Length = 0
         //set.xValuePosition = .outsideSlice
         set.yValuePosition = .outsideSlice
