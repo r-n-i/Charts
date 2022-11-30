@@ -119,7 +119,7 @@ extension CGPoint
 extension CGContext
 {
 
-    open func drawImage(_ image: NSUIImage, atCenter center: CGPoint, size: CGSize)
+    public func drawImage(_ image: NSUIImage, atCenter center: CGPoint, size: CGSize)
     {
         var drawOffset = CGPoint()
         drawOffset.x = center.x - (size.width / 2)
@@ -157,7 +157,7 @@ extension CGContext
         NSUIGraphicsPopContext()
     }
 
-    open func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false, drawWithWidth:Bool = false, maxWidth:CGFloat? = nil, maxHeight:CGFloat? = nil)
+    public func drawText(_ text: String, at point: CGPoint, align: TextAlignment, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat = 0.0, attributes: [NSAttributedString.Key : Any]?, isUpperSemicircle:Bool = false, drawWithWidth:Bool = false, maxWidth:CGFloat? = nil, maxHeight:CGFloat? = nil)
     {
         var mutableAttributes = attributes
         let paragraphStyle = MutableParagraphStyle()
@@ -236,7 +236,8 @@ extension CGContext
         }
     }
     
-    open func drawText(_ text: String, at point: CGPoint, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat, attributes: [NSAttributedString.Key : Any]?, width: CGFloat? = nil, height: CGFloat? = nil)
+
+    public func drawText(_ text: String, at point: CGPoint, anchor: CGPoint = CGPoint(x: 0.5, y: 0.5), angleRadians: CGFloat, attributes: [NSAttributedString.Key : Any]?, width: CGFloat? = nil, height: CGFloat? = nil)
     {
         var drawOffset = CGPoint()
 
